@@ -100,6 +100,16 @@ with open("dataset/Covid Data.csv", "r") as file:
         if row[4] != "9999-99-99":
             death_count_1_2 += 1
 
+with open("dataset/cohort_1.csv", "w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(header)
+    writer.writerows(cohort_1)
+
+with open("dataset/cohort_2.csv", "w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(header)
+    writer.writerows(cohort_2)
+
 print("\nTotal")
 
 print("\nICU")
