@@ -17,16 +17,21 @@ with open("dataset/Covid Data.csv", "r") as file:
     reader = csv.reader(file)
     header = next(reader)
     reader = list(reader)
+    reader_filtered = []
+
+    for row in reader:
+        if (int(row[7]) >= 18) and not ((row[20] == "97" or row[20] == "99") and  (row[5] == "97" or row[5] == "99") and row[4] == "9999-99-99"):
+            reader_filtered.append(row)
 
     cohort_1 = []
     cohort_2 = []
 
-    go3 = reader[:583335]
-    go4 = reader[583335:]
+    go3 = reader_filtered[:106413]
+    go4 = reader_filtered[106413:]
 
     sv = 0
     ev = 3
-    for gn in range(194445):
+    for gn in range(35471):
         chunk = go3[sv:ev]
         cohort_2.append(chunk.pop(random.randrange(0, 3)))
         cohort_1.extend(chunk)
@@ -34,14 +39,14 @@ with open("dataset/Covid Data.csv", "r") as file:
         ev += 3
     sv = 0
     ev = 4
-    for gn in range(116310):
+    for gn in range(21217):
             chunk = go4[sv:ev]
             cohort_2.append(chunk.pop(random.randrange(0, 4)))
             cohort_1.extend(chunk)
             sv += 4
             ev += 4
     
-    for row in reader:
+    for row in reader_filtered:
         if row[20] == "1":
             icu_count_1 += 1
         if row[20] == "2":
