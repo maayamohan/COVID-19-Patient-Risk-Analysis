@@ -20,7 +20,7 @@ with open("dataset/Covid Data.csv", "r") as file:
     reader_filtered = []
 
     for row in reader:
-        if (int(row[7]) >= 18) and not ((row[20] == "97" or row[20] == "99") and  (row[5] == "97" or row[5] == "99") and row[4] == "9999-99-99"):
+        if (int(row[7]) >= 18) and not ((row[20] in ["97", "98", "99"]) and  (row[5] in ["97", "98", "99"]) and row[4] == "9999-99-99"):
             reader_filtered.append(row)
 
     cohort_1 = []
@@ -51,13 +51,13 @@ with open("dataset/Covid Data.csv", "r") as file:
             icu_count_1 += 1
         if row[20] == "2":
             icu_count_2 += 1
-        if row[20] == "97" or row[20] == "99":
+        if row[20] in ["97", "98", "99"]:
             icu_count_9x += 1
         if row[5] == "1":
             mv_count_1 += 1
         if row[5] == "2":
             mv_count_2 += 1
-        if row[5] == "97" or row[5] == "99":
+        if row[5] in ["97", "98", "99"]:
             mv_count_9x += 1
         if row[4] == "9999-99-99":
             death_count_2 += 1
@@ -69,13 +69,13 @@ with open("dataset/Covid Data.csv", "r") as file:
             icu_count_1_1 += 1
         if row[20] == "2":
             icu_count_2_1 += 1
-        if row[20] == "97" or row[20] == "99":
+        if row[20] in ["97", "98", "99"]:
             icu_count_9x_1 += 1
         if row[5] == "1":
             mv_count_1_1 += 1
         if row[5] == "2":
             mv_count_2_1 += 1
-        if row[5] == "97" or row[5] == "99":
+        if row[5] in ["97", "98", "99"]:
             mv_count_9x_1 += 1
         if row[4] == "9999-99-99":
             death_count_2_1 += 1
@@ -87,13 +87,13 @@ with open("dataset/Covid Data.csv", "r") as file:
             icu_count_1_2 += 1
         if row[20] == "2":
             icu_count_2_2 += 1
-        if row[20] == "97" or row[20] == "99":
+        if row[20] in ["97", "98", "99"]:
             icu_count_9x_2 += 1
         if row[5] == "1":
             mv_count_1_2 += 1
         if row[5] == "2":
             mv_count_2_2 += 1
-        if row[5] == "97" or row[5] == "99":
+        if row[5] in ["97", "98", "99"]:
             mv_count_9x_2 += 1
         if row[4] == "9999-99-99":
             death_count_2_2 += 1
