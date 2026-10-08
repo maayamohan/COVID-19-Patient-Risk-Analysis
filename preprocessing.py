@@ -38,18 +38,18 @@ with open(COVID_DATA_PATH, "r") as file:
     ev = 3
     for gn in range(35471):
         chunk = go3[sv:ev]
-        cohort_2.append(chunk.pop(random.randrange(0, 3)))
+        cohort_2.append(chunk.pop(random.randrange(len(chunk))))
         cohort_1.extend(chunk)
-        sv += 3
-        ev += 3
+        sv += len(chunk)
+        ev += len(chunk)
     sv = 0
     ev = 4
     for gn in range(21217):
             chunk = go4[sv:ev]
-            cohort_2.append(chunk.pop(random.randrange(0, 4)))
+            cohort_2.append(chunk.pop(random.randrange(len(chunk))))
             cohort_1.extend(chunk)
-            sv += 4
-            ev += 4
+            sv += len(chunk)
+            ev += len(chunk)
     
     for row in reader_filtered:
         if row[20] == "1":
