@@ -1,6 +1,11 @@
 import csv
 import random
 
+COVID_DATA_PATH = "dataset/Covid Data.csv"
+COHORT_1_PATH = "dataset/cohort_1.csv"
+COHORT_2_PATH = "dataset/cohort_2.csv"
+
+
 icu_count_1 = icu_count_2 = icu_count_9x = 0
 mv_count_1 = mv_count_2 = mv_count_9x = 0
 death_count_1 = death_count_2 = 0
@@ -13,7 +18,7 @@ icu_count_1_2 = icu_count_2_2 = icu_count_9x_2 = 0
 mv_count_1_2 = mv_count_2_2 = mv_count_9x_2 = 0
 death_count_1_2 = death_count_2_2 = 0
 
-with open("dataset/Covid Data.csv", "r") as file:
+with open(COVID_DATA_PATH, "r") as file:
     reader = csv.reader(file)
     header = next(reader)
     reader = list(reader)
@@ -100,12 +105,12 @@ with open("dataset/Covid Data.csv", "r") as file:
         if row[4] != "9999-99-99":
             death_count_1_2 += 1
 
-with open("dataset/cohort_1.csv", "w", newline="") as file:
+with open(COHORT_1_PATH, "w", newline="") as file:
     writer = csv.writer(file)
     writer.writerow(header)
     writer.writerows(cohort_1)
 
-with open("dataset/cohort_2.csv", "w", newline="") as file:
+with open(COHORT_2_PATH, "w", newline="") as file:
     writer = csv.writer(file)
     writer.writerow(header)
     writer.writerows(cohort_2)
