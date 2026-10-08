@@ -36,7 +36,7 @@ with open("dataset/Covid Data.csv", "r") as file:
     ev = 4
     for gn in range(116310):
             chunk = go4[sv:ev]
-            cohort_2.append(chunk.pop(random.randrange(0, 3)))
+            cohort_2.append(chunk.pop(random.randrange(0, 4)))
             cohort_1.extend(chunk)
             sv += 4
             ev += 4
