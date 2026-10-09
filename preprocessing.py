@@ -47,6 +47,17 @@ def outcome_summary(data, target):
 
     return(count_yes, count_no, count_unknown)
 
+def prepare_target(data, target):
+    if target == "ICU":
+        data = [row for row in data if row[20] in ["1", "2"]]
+        y = [1 if row[20] == "1" else 0 for row in data]
+    elif target == "MV":
+            data = [row for row in data if row[5] in ["1", "2"]]
+            y = [1 if row[5] == "1" else 0 for row in data]
+    elif target == "Death":
+            y = [0 if row[4] == "9999-99-99" else 0 for row in data]
+
+    return data, y
 
 with open(COVID_DATA_PATH, "r") as file:
     reader = csv.reader(file)
