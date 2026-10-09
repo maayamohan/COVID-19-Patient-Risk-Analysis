@@ -34,9 +34,9 @@ def outcome_summary(data, target):
         value = row[config["index"]]
 
         if config["yes"](value):
-            count_no += 1
-        elif config["no"](value):
             count_yes += 1
+        elif config["no"](value):
+            count_no += 1
         elif config["unknown"](value):
             count_unknown += 1
 
