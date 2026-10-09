@@ -5,18 +5,48 @@ COVID_DATA_PATH = "dataset/Covid Data.csv"
 COHORT_1_PATH = "dataset/cohort_1.csv"
 COHORT_2_PATH = "dataset/cohort_2.csv"
 
+def outcome_summary(data, target):
+    count_yes = count_no = count_unknown = 0
+    targets = {
+        "ICU": {
+            "index": 20,
+            "yes": lambda value: value == "1",
+            "no": lambda value: value == "2",
+            "unknown": lambda value: value in ["97", "98", "99"]
+        },
+        "MV": {
+            "index": 5,
+            "yes": lambda value: value == "1",
+            "no": lambda value: value == "2",
+            "unknown": lambda value: value in ["97", "98", "99"]
+        },
+        "Death": {
+            "index": 4,
+            "yes": lambda value: value != "9999-99-99",
+            "no": lambda value: value == "9999-99-99",
+            "unknown": lambda value: False
+        }
+    }
 
-icu_count_1 = icu_count_2 = icu_count_9x = 0
-mv_count_1 = mv_count_2 = mv_count_9x = 0
-death_count_1 = death_count_2 = 0
+    config = targets[target]
 
-icu_count_1_1 = icu_count_2_1 = icu_count_9x_1 = 0
-mv_count_1_1 = mv_count_2_1 = mv_count_9x_1 = 0
-death_count_1_1 = death_count_2_1 = 0
+    for row in data:
+        value = row[config["index"]]
 
-icu_count_1_2 = icu_count_2_2 = icu_count_9x_2 = 0
-mv_count_1_2 = mv_count_2_2 = mv_count_9x_2 = 0
-death_count_1_2 = death_count_2_2 = 0
+        if config["yes"](value):
+            count_no += 1
+        elif config["no"](value):
+            count_yes += 1
+        elif config["unknown"](value):
+            count_unknown += 1
+
+    print("\n", target, sep="")
+    print("Yes:", count_yes)
+    print("No:", count_no)
+    print("Unknown:", count_unknown)
+
+    return(count_yes, count_no, count_unknown)
+
 
 with open(COVID_DATA_PATH, "r") as file:
     reader = csv.reader(file)
@@ -50,60 +80,19 @@ with open(COVID_DATA_PATH, "r") as file:
             cohort_1.extend(chunk)
             sv += len(chunk)
             ev += len(chunk)
-    
-    for row in reader_filtered:
-        if row[20] == "1":
-            icu_count_1 += 1
-        if row[20] == "2":
-            icu_count_2 += 1
-        if row[20] in ["97", "98", "99"]:
-            icu_count_9x += 1
-        if row[5] == "1":
-            mv_count_1 += 1
-        if row[5] == "2":
-            mv_count_2 += 1
-        if row[5] in ["97", "98", "99"]:
-            mv_count_9x += 1
-        if row[4] == "9999-99-99":
-            death_count_2 += 1
-        if row[4] != "9999-99-99":
-            death_count_1 += 1
-    
-    for row in cohort_1:
-        if row[20] == "1":
-            icu_count_1_1 += 1
-        if row[20] == "2":
-            icu_count_2_1 += 1
-        if row[20] in ["97", "98", "99"]:
-            icu_count_9x_1 += 1
-        if row[5] == "1":
-            mv_count_1_1 += 1
-        if row[5] == "2":
-            mv_count_2_1 += 1
-        if row[5] in ["97", "98", "99"]:
-            mv_count_9x_1 += 1
-        if row[4] == "9999-99-99":
-            death_count_2_1 += 1
-        if row[4] != "9999-99-99":
-            death_count_1_1 += 1
-    
-    for row in cohort_2:
-        if row[20] == "1":
-            icu_count_1_2 += 1
-        if row[20] == "2":
-            icu_count_2_2 += 1
-        if row[20] in ["97", "98", "99"]:
-            icu_count_9x_2 += 1
-        if row[5] == "1":
-            mv_count_1_2 += 1
-        if row[5] == "2":
-            mv_count_2_2 += 1
-        if row[5] in ["97", "98", "99"]:
-            mv_count_9x_2 += 1
-        if row[4] == "9999-99-99":
-            death_count_2_2 += 1
-        if row[4] != "9999-99-99":
-            death_count_1_2 += 1
+
+    print("\n\nTOTAL")
+    outcome_summary(reader_filtered, "ICU")
+    outcome_summary(reader_filtered, "MV")
+    outcome_summary(reader_filtered, "Death")
+    print("\n\nCOHORT 1")
+    outcome_summary(cohort_1, "ICU")
+    outcome_summary(cohort_1, "MV")
+    outcome_summary(cohort_1, "Death")
+    print("\n\nCOHORT 2\n")
+    outcome_summary(cohort_2, "ICU")
+    outcome_summary(cohort_2, "MV")
+    outcome_summary(cohort_2, "Death")
 
 with open(COHORT_1_PATH, "w", newline="") as file:
     writer = csv.writer(file)
@@ -114,60 +103,3 @@ with open(COHORT_2_PATH, "w", newline="") as file:
     writer = csv.writer(file)
     writer.writerow(header)
     writer.writerows(cohort_2)
-
-print("\nTotal")
-
-print("\nICU")
-print("Yes:", icu_count_1)
-print("No:", icu_count_2)
-print("Unknown:", icu_count_9x)
-print("Total:", icu_count_9x + icu_count_2 + icu_count_1)
-
-print("\nMV")
-print("Yes:", mv_count_1)
-print("No:", mv_count_2)
-print("Unknown:", mv_count_9x)
-print("Total:", mv_count_9x + mv_count_2 + mv_count_1)
-
-print("\nDeath")
-print("Yes:", death_count_1)
-print("No:", death_count_2)
-print("Total:", death_count_2 + death_count_1)
-
-print("\nCohort 1")
-
-print("\nICU")
-print("Yes:", icu_count_1_1)
-print("No:", icu_count_2_1)
-print("Unknown:", icu_count_9x_1)
-print("Total:", icu_count_9x_1 + icu_count_2_1 + icu_count_1_1)
-
-print("\nMV")
-print("Yes:", mv_count_1_1)
-print("No:", mv_count_2_1)
-print("Unknown:", mv_count_9x_1)
-print("Total:", mv_count_9x_1 + mv_count_2_1 + mv_count_1_1)
-
-print("\nDeath")
-print("Yes:", death_count_1_1)
-print("No:", death_count_2_1)
-print("Total:", death_count_2_1 + death_count_1_1)
-
-print("\nCohort 2")
-
-print("\nICU")
-print("Yes:", icu_count_1_2)
-print("No:", icu_count_2_2)
-print("Unknown:", icu_count_9x_2)
-print("Total:", icu_count_9x_2 + icu_count_2_2 + icu_count_1_2)
-
-print("\nMV")
-print("Yes:", mv_count_1_2)
-print("No:", mv_count_2_2)
-print("Unknown:", mv_count_9x_2)
-print("Total:", mv_count_9x_2 + mv_count_2_2 + mv_count_1_2)
-
-print("\nDeath")
-print("Yes:", death_count_1_2)
-print("No:", death_count_2_2)
-print("Total:", death_count_2_2 + death_count_1_2)
