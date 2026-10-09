@@ -55,7 +55,7 @@ def prepare_target(data, target):
             data = [row for row in data if row[5] in ["1", "2"]]
             y = [1 if row[5] == "1" else 0 for row in data]
     elif target == "Death":
-            y = [0 if row[4] == "9999-99-99" else 0 for row in data]
+            y = [0 if row[4] == "9999-99-99" else 1 for row in data]
 
     return data, y
 
