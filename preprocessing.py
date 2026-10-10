@@ -75,22 +75,15 @@ with open(COVID_DATA_PATH, "r") as file:
     go3 = reader_filtered[:106413]
     go4 = reader_filtered[106413:]
 
-    sv = 0
-    ev = 3
-    for gn in range(35471):
-        chunk = go3[sv:ev]
+    for i in range(0, len(go3), 3):
+        chunk = go3[i:i + 3]
         cohort_2.append(chunk.pop(random.randrange(len(chunk))))
         cohort_1.extend(chunk)
-        sv += len(chunk)
-        ev += len(chunk)
-    sv = 0
-    ev = 4
-    for gn in range(21217):
-            chunk = go4[sv:ev]
-            cohort_2.append(chunk.pop(random.randrange(len(chunk))))
-            cohort_1.extend(chunk)
-            sv += len(chunk)
-            ev += len(chunk)
+
+    for i in range(0, len(go4), 4):
+        chunk = go4[i:i + 4]
+        cohort_2.append(chunk.pop(random.randrange(len(chunk))))
+        cohort_1.extend(chunk)
 
     print("\n\nTOTAL")
     outcome_summary(reader_filtered, "ICU")
