@@ -54,7 +54,7 @@ PROJECT_ROOT = os.path.dirname(
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from src.preprocessing_clean import load_data, prepare_target, split_data
+from src.preprocessing_clean import prepare_target
 from src.feature_engineering import get_feature_sets, build_feature_pipeline
 from src.advanced_models import get_models
 
@@ -172,7 +172,8 @@ def append_failure(failures_file, details):
 # ============================================================
 
 def run_single_experiment(
-    df,
+    train_df,
+    test_df,
     target,
     feature_set_name,
     features,
@@ -189,19 +190,22 @@ def run_single_experiment(
     )
     print("=" * 72)
 
-    X_all, y = prepare_target(df, target)
-    # Split on the complete 13-feature candidate matrix for every feature set.
-    # This keeps the held-out records identical across Demo, DemoComorb, and
-    # Clinical comparisons while grouping repeated full feature rows.
-    X_all = X_all[get_feature_sets()["Clinical"]].copy()
+    # Use the predefined cohorts: Cohort 1 for training, Cohort 2 for testing.
+    # Prepare targets independently because unknown outcomes may be filtered.
+    X_train, y_train = prepare_target(train_df, target)
+    X_test, y_test = prepare_target(test_df, target)
 
-    print(f"Samples: {len(X_all)}")
-    print(f"Positive cases: {int(y.sum())}")
-    print(f"Positive rate: {y.mean():.4f}")
+    candidate_features = get_feature_sets()["Clinical"]
+    X_train = X_train[candidate_features].copy()
+    X_test = X_test[candidate_features].copy()
 
-    X_train, X_test, y_train, y_test = split_data(
-        X_all, y, test_size=TEST_SIZE, random_state=RANDOM_STATE
-    )
+    print(f"Training cohort samples: {len(X_train)}")
+    print(f"Test cohort samples: {len(X_test)}")
+    print(f"Training positive cases: {int(y_train.sum())}")
+    print(f"Training positive rate: {y_train.mean():.4f}")
+    print(f"Test positive cases: {int(y_test.sum())}")
+    print(f"Test positive rate: {y_test.mean():.4f}")
+
     X_train = X_train[features].copy()
     X_test = X_test[features].copy()
 
@@ -308,7 +312,7 @@ def run_single_experiment(
         "test_samples": len(X_test),
         "smoteenn_train_cap": applied_train_cap,
         "random_state": RANDOM_STATE,
-        "split_method": "stratified_grouped_identical_predictor_rows",
+        "split_method": "predefined_cohort_1_train_cohort_2_test",
         **metrics,
     }
 
@@ -373,10 +377,10 @@ def main():
     # Keep the historical row-random outputs untouched. New group-aware runs
     # use separate files so resume never treats an old split as equivalent.
     results_file = os.path.join(
-        RESULTS_DIR, f"{engineering_method}_grouped_results.csv"
+        RESULTS_DIR, f"{engineering_method}_cohort_results.csv"
     )
     failures_file = os.path.join(
-        RESULTS_DIR, f"{engineering_method}_grouped_failures.csv"
+        RESULTS_DIR, f"{engineering_method}_cohort_failures.csv"
     )
 
     print("\n" + "=" * 72)
@@ -391,8 +395,10 @@ def main():
         )
     print("=" * 72)
 
-    df = load_data()
-    print(f"Dataset shape: {df.shape}")
+    train_df = pd.read_csv(os.path.join(PROJECT_ROOT, "dataset", "cohort_1.csv"))
+    test_df = pd.read_csv(os.path.join(PROJECT_ROOT, "dataset", "cohort_2.csv"))
+    print(f"Cohort 1 (training) shape: {train_df.shape}")
+    print(f"Cohort 2 (testing): shape {test_df.shape}")
 
     all_feature_sets = get_feature_sets()
     feature_sets = {
@@ -449,7 +455,8 @@ def main():
 
                 try:
                     result = run_single_experiment(
-                        df=df,
+                        train_df=train_df,
+                        test_df=test_df,
                         target=target,
                         feature_set_name=feature_set_name,
                         features=features,
