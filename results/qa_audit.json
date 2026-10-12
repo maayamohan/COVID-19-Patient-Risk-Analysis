@@ -1,0 +1,12 @@
+{
+  "dataset_rows": 1048575,
+  "dataset_columns": 21,
+  "exact_duplicate_rows_beyond_first": 812049,
+  "consolidated_result_rows": 135,
+  "historical_result_rows": 117,
+  "grouped_result_rows": 18,
+  "historical_duplicate_experiment_ids": 0,
+  "missing_metric_cells": 0,
+  "non_finite_metric_cells": 0,
+  "historical_split_caveat": "stratified random row split; duplicate records may cross partitions"
+}

@@ -251,19 +251,18 @@ def build_gus():
     """
     Generic Univariate Selection proxy.
 
-    The paper mentions GUS but does not provide enough detail
-    in the paper to reproduce its exact implementation.
+    The original paper mentions GUS but does not provide
+    sufficient implementation details to reproduce it exactly.
 
-    Therefore we use mutual information as a defensible
-    generic univariate feature-selection approach.
+    We therefore use mutual-information-based univariate
+    feature selection as a paper-inspired approximation.
 
-    This must be described as a paper-inspired approximation,
-    not an exact reproduction.
+    The top 10 features are retained.
     """
 
     return SelectKBest(
         score_func=mutual_info_classif,
-        k="all"
+        k=10
     )
 
 
@@ -424,4 +423,5 @@ def get_lasso_C_values():
         1.0,
         30.0,
         50.0
+
     ]
