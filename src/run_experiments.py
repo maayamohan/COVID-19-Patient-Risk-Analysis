@@ -259,8 +259,12 @@ def run_single_experiment(
 
         print(f"Before SMOTEENN: {X_train_processed.shape}")
 
+        minority_count = min(y_train.value_counts())
+        majority_count = max(y_train.value_counts())
+        current_ratio = minority_count / majority_count
+
         smote = SMOTE(
-            sampling_strategy=1 / 3,
+            sampling_strategy=max(1 / 3, current_ratio + 0.01),
             random_state=RANDOM_STATE,
         )
         enn = EditedNearestNeighbours(
