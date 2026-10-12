@@ -1,7 +1,9 @@
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
@@ -12,7 +14,8 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 # Configuration
 # ---------------------------------------------------------
 
-DATA_PATH = "dataset/Covid Data.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_ROOT / "dataset" / "Covid Data.csv"
 
 FEATURES = [
     "SEX",
@@ -97,12 +100,14 @@ def prepare_target(df, target):
     elif target == "DEATH":
 
         # 9999-99-99 = no recorded death
-        y = (
-            df["DATE_DIED"]
-            .astype(str)
-            .ne("9999-99-99")
-            .astype(int)
+        date_text = df["DATE_DIED"].astype("string").str.strip()
+        no_death = date_text.eq("9999-99-99")
+        death_date = pd.to_datetime(
+            date_text.where(~no_death), format="%d/%m/%Y", errors="coerce"
         )
+        known = no_death | death_date.notna()
+        df = df.loc[known].copy()
+        y = (~no_death.loc[known]).astype("int8")
 
     else:
         raise ValueError(
@@ -117,7 +122,11 @@ def prepare_target(df, target):
     # -----------------------------------------------------
 
     # 98/99 represent unknown/missing values
-    X = X.replace([97, 98, 99], np.nan)
+    X = X.copy()
+    X["AGE"] = X["AGE"].replace([97, 98, 99], np.nan)
+    for feature in FEATURES:
+        if feature not in {"AGE", "SEX"}:
+            X[feature] = X[feature].replace([98, 99], np.nan)
 
     y.name = target
     return X, y
@@ -128,16 +137,27 @@ def prepare_target(df, target):
 # ---------------------------------------------------------
 
 def split_data(X, y, test_size=0.2, random_state=42):
+    """Make a stratified split that keeps identical feature rows together.
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=test_size,
-        random_state=random_state,
-        stratify=y
+    The public source has no patient identifier. Grouping exact rows in the
+    supplied feature matrix reduces train/test contamination from repeated
+    records without claiming patient-level independence. Pass the full
+    candidate matrix when comparing feature subsets so each subset shares the
+    same held-out rows. Five-fold grouped stratification approximates the
+    requested test fraction and preserves outcome proportions.
+    """
+    if not 0 < test_size < 1:
+        raise ValueError("test_size must be between 0 and 1.")
+    if len(X) != len(y):
+        raise ValueError("X and y must contain the same number of rows.")
+
+    groups = pd.util.hash_pandas_object(X, index=False).to_numpy()
+    n_splits = max(2, round(1 / test_size))
+    splitter = StratifiedGroupKFold(
+        n_splits=n_splits, shuffle=True, random_state=random_state
     )
-
-    return X_train, X_test, y_train, y_test
+    train_idx, test_idx = next(splitter.split(X, y, groups=groups))
+    return X.iloc[train_idx], X.iloc[test_idx], y.iloc[train_idx], y.iloc[test_idx]
 
 
 # ---------------------------------------------------------

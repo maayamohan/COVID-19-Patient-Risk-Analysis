@@ -1,0 +1,42 @@
+target,feature_set,engineering,model,lasso_C,error,traceback
+INTUBED,Demo,smoteenn,LogisticRegression,,"ValueError('This solver needs samples of at least 2 classes in the data, but the data contains only one class: np.int64(0)')","Traceback (most recent call last):
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 444, in main
+    result = run_single_experiment(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 281, in run_single_experiment
+    model.fit(X_train_processed, y_train)
+  File ""C:\Users\N A Manasa\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\base.py"", line 1403, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\N A Manasa\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\linear_model\_logistic.py"", line 1501, in fit
+    raise ValueError(
+ValueError: This solver needs samples of at least 2 classes in the data, but the data contains only one class: np.int64(0)
+"
+INTUBED,Demo,smoteenn,RandomForest,,IndexError('index 1 is out of bounds for axis 1 with size 1'),"Traceback (most recent call last):
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 444, in main
+    result = run_single_experiment(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 283, in run_single_experiment
+    y_score = get_model_score(model, X_test_processed)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 99, in get_model_score
+    return model.predict_proba(X)[:, 1]
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+IndexError: index 1 is out of bounds for axis 1 with size 1
+"
+INTUBED,Demo,smoteenn,SVM,,"ValueError('This solver needs samples of at least 2 classes in the data, but the data contains only one class: np.int64(0)')","Traceback (most recent call last):
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 444, in main
+    result = run_single_experiment(
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File ""D:\sem 5\ML\MiniProj\COVID-19-Patient-Risk-Analysis\src\run_experiments.py"", line 281, in run_single_experiment
+    model.fit(X_train_processed, y_train)
+  File ""C:\Users\N A Manasa\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\base.py"", line 1403, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\N A Manasa\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\svm\_classes.py"", line 330, in fit
+    self.coef_, self.intercept_, n_iter_ = _fit_liblinear(
+                                           ^^^^^^^^^^^^^^^
+  File ""C:\Users\N A Manasa\AppData\Local\Programs\Python\Python311\Lib\site-packages\sklearn\svm\_base.py"", line 1232, in _fit_liblinear
+    raise ValueError(
+ValueError: This solver needs samples of at least 2 classes in the data, but the data contains only one class: np.int64(0)
+"
