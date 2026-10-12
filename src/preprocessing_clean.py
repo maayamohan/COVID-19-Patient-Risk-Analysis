@@ -102,8 +102,13 @@ def prepare_target(df, target):
         # 9999-99-99 = no recorded death
         date_text = df["DATE_DIED"].astype("string").str.strip()
         no_death = date_text.eq("9999-99-99")
+        date_values = date_text.where(~no_death)
         death_date = pd.to_datetime(
-            date_text.where(~no_death), format="%d/%m/%Y", errors="coerce"
+            date_values, format="%Y-%m-%d", errors="coerce"
+        )
+        remaining = death_date.isna() & date_values.notna()
+        death_date.loc[remaining] = pd.to_datetime(
+            date_values.loc[remaining], format="%d/%m/%Y", errors="coerce"
         )
         known = no_death | death_date.notna()
         df = df.loc[known].copy()
